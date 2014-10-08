@@ -476,6 +476,5 @@ if __name__ == "__main__":
     newQ = _PrioritySet(hasBetterUtilityThan)
     newQ.push(Test(0,0,4))
     newQ.push(Test(1,1,4))
-    print newQ.pop() == Test(0,0,4)
     
     print ("This concludes tests for Search.py")
