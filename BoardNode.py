@@ -179,7 +179,7 @@ def ManhattanDistanceAccountingOrientation(boardNode):
     facingTowards = facingTowards or (die.getSouth()==1 and dr>0)
     facingTowards = facingTowards or (die.getEast()==1 and dc>0)
     if (facingTowards):
-        return abs(dr)+abs(dc)
+        return abs(dr)+abs(dc)#mark
     
     #if the 1 is facing upwards and...
     if (die.getTop()==1):
@@ -188,7 +188,7 @@ def ManhattanDistanceAccountingOrientation(boardNode):
             return 0
         #...if it is orthogonal to the goal: die is dr+dc+2 steps from goal
         if (dr==0 or dc==0):
-            return abs(dr)+abs(dc)+2
+            return abs(dr)+abs(dc)#mark
         #otherwise, it is dr+dc+4 steps from the goal
         else:
             return abs(dr)+abs(dc)+4
@@ -202,13 +202,13 @@ def ManhattanDistanceAccountingOrientation(boardNode):
         #...if either dr or dc is zero: die is dr+dc+4 steps away
         if (dr==0 or dc==0):
             
-            if (die.getNorth()==1 and dr>0):
+            if (die.getNorth()==1 and dr>0 and dc==0):
                 return abs(dr)+abs(dc)+2
-            elif (die.getEast()==1 and dc<0):
+            elif (die.getEast()==1 and dc<0 and dr==0):
                 return abs(dr)+abs(dc)+2
-            elif (die.getSouth()==1 and dr<0):
+            elif (die.getSouth()==1 and dr<0 and dc==0):
                 return abs(dr)+abs(dc)+2
-            elif (die.getWest()==1 and dc>0):
+            elif (die.getWest()==1 and dc>0 and dr==0):
                 return abs(dr)+abs(dc)+2
                 
             return abs(dr)+abs(dc)+4

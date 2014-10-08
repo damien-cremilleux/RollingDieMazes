@@ -303,8 +303,7 @@ def bestFirstSearch(evaluationFunction,startNode,\
                 return curNode.getPath()
             successors = curNode.successorStates()
             for suc in successors:
-                #TODO: notify node that it is being expanded to
-                ##so we can track statistics
+                suc.notifyExpansion()
                 suc.evaluate(evaluationFunction)
                 frontier.push(suc)
         return None

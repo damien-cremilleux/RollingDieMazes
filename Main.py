@@ -51,8 +51,8 @@ def main():
                     print ("Length: " + str(len(path)))
                 else:#if path not found
                     print ("No Solution")
-                print ("Number Visited:  "+str(closedCounter.getCount()))
-                print ("Number Expanded: "+str(frontierCounter.getCount()))
+                print ("Number Visited  : "+str(closedCounter.getCount()))
+                print ("Number Generated: "+str(frontierCounter.getCount()))
                 print ("End of heuristic '"+heuristicFunction.__name__+"'")
                 ##reset board for next heuristic
                 board._die = Die()
