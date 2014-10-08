@@ -16,6 +16,15 @@ from Search import AStarSearchNode
 
 from Directions import *
 
+class Counter(object):
+    __slots__ = ("count")
+    def __init__(self,init=0):
+        self.count = init
+    def countUp(self,amt=1):
+        self.count = self.count + amt
+    def getCount(self):
+        return self.count
+
 class BoardNode(AStarSearchNode):
     """
     Provides search state for the board puzzle
@@ -30,9 +39,9 @@ class BoardNode(AStarSearchNode):
     Die         die         = the die object that corresponds to die state.
     tuple(Direction) path   = the moves taken from initial state to get here
     """
-    __slots__ = ("board","location","die","path")
+    __slots__ = ("board","location","die","path","closedCounter","frontierCounter")
     
-    def __init__(self,board,location,die,path=tuple()):
+    def __init__(self,board,location,die,closedCounter,frontierCounter,path):
         """
         Function: Board -> null
         
@@ -44,19 +53,16 @@ class BoardNode(AStarSearchNode):
         self.location = location
         self.die = die
         self.path = path
-        #############
-        #DEBUGGING: Prints movement as nodes are created
-        #print self
-        #raw_input()
-        #############
+        self.closedCounter = closedCounter
+        self.frontierCounter = frontierCounter
     
     def __str__(self):
         result = "NODE:\n"
         result += "Location: "+str(self.location)+"\n"
         result += "Die:      "+str(self.die.getTop())+"\n"
-        result += "  ud:"+str(self.die._upDown)+"\n"
-        result += "  ns:"+str(self.die._northSouth)+"\n"
-        result += "  ew:"+str(self.die._eastWest)+"\n"
+        result += "  UD:"+str(self.die._upDown)+"\n"
+        result += "  NS:"+str(self.die._northSouth)+"\n"
+        result += "  EW:"+str(self.die._eastWest)+"\n"
         result += "Hash:     "+str(hash(self))+"\n"
         result += "Dir: "
         for dir in self.path:
@@ -77,7 +83,7 @@ class BoardNode(AStarSearchNode):
         for direction in self.board.getValidMoves(self.location,self.die):
             newState = self.board.nextState(direction,self.location,self.die)
             newPath = self.path + (direction,)
-            newNode = BoardNode(self.board,newState[0],newState[1],newPath)
+            newNode = BoardNode(self.board,newState[0],newState[1],self.closedCounter,self.frontierCounter,newPath)
             result.append(newNode)
         return result
     
@@ -113,6 +119,11 @@ class BoardNode(AStarSearchNode):
         Returns: the number of movements (cost) to get to this world state
         """
         return len(self.path)
+    
+    def notifyClosing(self):
+        self.closedCounter.countUp()
+    def notifyExpansion(self):
+        self.frontierCounter.countUp()
     
     #allow use with == operator and use in sets or hashmaps
     def __eq__(self,other):

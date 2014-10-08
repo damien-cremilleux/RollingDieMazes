@@ -19,20 +19,7 @@ from Die import Die
 from Board import Board
 from BoardNode import *
 from Search import aStarSearch
-
-class NoStartError(Exception):
-    def __init__(self,message):
-        super(Exception,self).__init__(message)
-
-def getStartLocation(filename):
-    row = 0
-    file = open(filename,"r")
-    for line in file:
-        for col in range(0,len(line)):
-            if line[col] == Board.START:
-                return (row,col)
-        row = row + 1
-    raise NoStartError("Board has no start location: "+filename)
+from Board import NoStartError
 
 def main():
     if len(sys.argv) == 1:
@@ -42,24 +29,33 @@ def main():
         filename = sys.argv[i]
         try:
             board = Board(filename)
-            startLocation = getStartLocation(filename)
+            startLocation = board._dieLocation
             startDie = Die()
             
-            print ("")
-            print (board)
-            print ("")
-            
             for heuristicFunction in SequenceOfHeuristics:
-                startNode = BoardNode(board,startLocation,startDie)
+                print ("")
+                print ("")
+                print ("Function: "+heuristicFunction.__name__)
+                print (board)
+                closedCounter = Counter()#global counter for node closing
+                frontierCounter = Counter()#global counter for node expansion
+                emptyPath = tuple()
+                startNode = BoardNode(board,startLocation,startDie,closedCounter,frontierCounter,emptyPath)
                 path = aStarSearch(heuristicFunction,startNode)
                 if path:#if path is found
                     for direction in path:
-                        print (Directions.directionToString(direction))
+                        board.moveDie(direction)
+                        print (board)
                     print ("")
                     print ("Length: " + str(len(path)))
-                    print ("")
                 else:#if path not found
                     print ("No Solution")
+                print ("Number Visited:  "+str(closedCounter.getCount()))
+                print ("Number Expanded: "+str(frontierCounter.getCount()))
+                print ("End of function '"+heuristicFunction.__name__+"'")
+                ##reset board for next heuristic
+                board._die = Die()
+                board._dieLocation = startLocation
             
         except IOError as e:
             print (e)

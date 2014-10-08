@@ -259,6 +259,7 @@ def bestFirstSearch(evaluationFunction,startNode,\
             #print "Closing:"
             #print curNode
             #raw_input()
+            curNode.notifyClosing()
             ###################
             closed.add(curNode)
             if curNode.isGoal():
@@ -271,8 +272,9 @@ def bestFirstSearch(evaluationFunction,startNode,\
                     if (not suc in frontier):
                         ##TRACING############
                         #print "Expanding To:"
-                        #print hashable
+                        #print suc
                         #raw_input()
+                        suc.notifyExpansion()
                         ###################
                         frontier.push(suc)
                     else:
@@ -281,8 +283,9 @@ def bestFirstSearch(evaluationFunction,startNode,\
                         if (comparator(suc,old)):
                             ##TRACING############
                             #print "Expanding To:"
-                            #print hashable
+                            #print suc
                             #raw_input()
+                            suc.notifyExpansion()
                             ###################
                             frontier.push(suc)#replaces old and reheapifies
         return None#return an empty path

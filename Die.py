@@ -67,6 +67,9 @@ class Die:
         are never altered
         """
         return hash((self._upDown,self._northSouth,self._eastWest))
+    def __str__(self):
+        return "TopFace: "+str(self.getTop())+"   NorthFace: "+\
+                str(self.getNorth())+"   EastFace: "+str(self.getEast())
         
     ############################################################################
     

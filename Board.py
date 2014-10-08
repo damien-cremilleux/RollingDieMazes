@@ -19,7 +19,11 @@ from copy import deepcopy
 from Directions import *
 from Die import *
 
-class Board:
+class NoStartError(Exception):
+    def __init__(self,message):
+        super(Exception,self).__init__(message)
+
+class Board(object):
     """
     Represents a model of a board for a Rolling Die Maze puzzle.
     
@@ -61,14 +65,20 @@ class Board:
         """
         self._grid = list()
         tmpGrid = list()        # Temporary grid, used for formatting
-        f = open(boardFile)
+        f = open(boardFile,"r")
         for line in f:
             tmpGrid.append(line)
 
+        row = 0
+        col = -1
         for line in tmpGrid:
-             self._grid.append(line.split())
-        
-        self._dieLocation = (0,0)
+            self._grid.append(line.split())
+            if Board.START in line.split():
+                col = line.split().index(Board.START)
+                self._dieLocation = (row,col)
+            row = row + 1
+        if col < 0:
+            raise NoStartError("Board has no start location: "+filename)
         self._die = Die()
 
     def __str__(self):
@@ -78,10 +88,20 @@ class Board:
         Description: Return a formatted string representing the board
         """
         resultString = ""
+        rNum = 0
         for row in self._grid:
+            cNum = 0
             for elem in row:
-                resultString = resultString + elem + " "
+                if (rNum,cNum) == self._dieLocation:
+                    resultString = resultString + "D" + " "
+                else:
+                    resultString = resultString + elem + " "
+                cNum = cNum + 1
             resultString = resultString + "\n"
+            rNum = rNum + 1
+        ###die info
+        resultString = resultString + str(self._die) + "\n"
+        
         return resultString
 
         # rowStrings = re.split('\s+',boardString)#split and remove endline chars
