@@ -19,7 +19,7 @@ Dates editted:
 from PriorityQueue import *
 
 ################################################################################
-class SearchNode(object):
+class SearchNode:
     """Interface
     An interface that is used by the search functions.  A search node can have
     some changing members, but THE WORLD STATE MUST ALWAYS REMAIN CONSTANT so 
@@ -91,7 +91,7 @@ class PathTracingSearchNode(SearchNode):
     """
     
     def __init__(self):
-        super(PathTracingSearchNode,self).__init__()
+        super(SearchNode,self).__init__()
     
     def getPath(self):
         """
@@ -131,7 +131,7 @@ class EvaluatedNode(SearchNode):
     
     ###def __init__(self,evalFunction):
     def __init__(self):##WE MUST EVALUATE LATER
-        super(EvaluatedNode,self).__init__()
+        super(SearchNode,self).__init__()
         ###self._evaluation = evalFunction(self)
     
     def evaluate(self,evalFunction):
@@ -141,14 +141,10 @@ class EvaluatedNode(SearchNode):
         self._evaluation = evalFunction(self)
     
     def getEvaluation(self):
-        """
-        Preconditions: only use after a call to this.evaluate(f)
-        """
         return self._evaluation
     
     ##these operators assume initialization of evaluation
-    #Note: DO NOT RELY ON == and != operator for the evaluation of this node:
-    #              those operators compare underlying world-state
+    #Note: DO NOT RELY ON == and != operator for the evaluation of this node
     def __lt__(self,other):
         return self._evaluation < other._evaluation
     def __le__(self,other):
@@ -158,7 +154,7 @@ class EvaluatedNode(SearchNode):
     def __ge__(self,other):
         return self._evaluation >= other._evaluation
     def __cmp__(self,other):
-        return self._evaluation-other._evaluation
+        return ##TODO
 
 ################################################################################
 #####BEST FIRST SEARCH##########################################################
@@ -176,8 +172,10 @@ class BestFirstSearchNode(EvaluatedNode,PathTracingSearchNode):
     User must implement needed methods
     """
     def __init__(self):
-        super(BestFirstSearchNode,self).__init__()
-        #note: diamond inheritence
+        super(EvalutedNode,self).__init__()
+        super(PathTracingSearchNode,self).__init__()
+        #note: possible double call to SearchNode.__init__()
+
 class _PrioritySet(PriorityQueue):
     """Minor Class
     Represents a priority queue combined with a set to provide O(logn) retrieval
@@ -185,7 +183,7 @@ class _PrioritySet(PriorityQueue):
     """
     __slots__ = ("_hiddenSet",)
     def __init__(self,comparator):
-        super(_PrioritySet,self).__init__(comparator)
+        super(PriorityQueue,self).__init__(comparator)
         self._hiddenSet = set()#TODO: change to a map for O(logn) pushing
     def push(self,hashable):
         """
@@ -194,22 +192,21 @@ class _PrioritySet(PriorityQueue):
         """
         if hashable in self._hiddenSet:
             ##replace the old hashable with the new one
-            for ind in range(0,len(self.heapArray)):
-                if self.heapArray[ind] == hashable:
-                    self.heapArray[ind] = hashable
+            for ind in range(0,len(self._heapArray)):
+                if self._heapArray[ind] == hashable:
+                    self._heapArray[ind] = hashable
                     self._siftUp(ind)
                     break
-            for ind in range(0,len(self.heapArray)):
-                if self.heapArray[ind] == hashable:
+            for ind in range(0,len(self._heapArray)):
+                if self._heapArray[ind] == hashable:
                     self._sinkDown(ind)
                     break
         else:
-            super(_PrioritySet,self).push(hashable)
+            super(PriorityQueue,self).push(hashable)
             self._hiddenSet.add(hashable)
     def pop(self):
-        val = super(_PrioritySet,self).pop()
+        val = super(PriorityQueue,self).pop()
         self._hiddenSet.remove(val)
-        return val
     def __contains__(self,item):
         return (item in self._hiddenSet)
     def find(self,hashable):
@@ -217,9 +214,9 @@ class _PrioritySet(PriorityQueue):
         Function: SearchNode -> SearchNode
         Note that this compares world state, not other state
         """
-        for ind in range(0,len(self.heapArray)):
-            if self.heapArray[ind] == hashable:
-                return self.heapArray[ind]
+        for ind in range(0,len(self._heapArray)):
+            if self._heapArray[ind] == hashable:
+                return self._heapArray[ind]
 
 def bestFirstSearch(evaluationFunction,startNode,\
                     graphSearch=True,costMode=True):
@@ -249,17 +246,10 @@ def bestFirstSearch(evaluationFunction,startNode,\
     if (graphSearch):
         frontier = _PrioritySet(comparator)#doesn't store 2 w/ same world state
         startNode.evaluate(evaluationFunction)
-
         frontier.push(startNode)
-        
         closed = set()
         while (not frontier.isEmpty()):
             curNode = frontier.pop()
-            ##TRACING############
-            #print "Closing:"
-            #print curNode
-            #raw_input()
-            ###################
             closed.add(curNode)
             if curNode.isGoal():
                 return curNode.getPath()
@@ -269,21 +259,11 @@ def bestFirstSearch(evaluationFunction,startNode,\
                 suc.evaluate(evaluationFunction)
                 if (not suc in closed):
                     if (not suc in frontier):
-                        ##TRACING############
-                        #print "Expanding To:"
-                        #print hashable
-                        #raw_input()
-                        ###################
                         frontier.push(suc)
                     else:
                         #if our new one is better, swap them
                         old = frontier.find(suc)
                         if (comparator(suc,old)):
-                            ##TRACING############
-                            #print "Expanding To:"
-                            #print hashable
-                            #raw_input()
-                            ###################
                             frontier.push(suc)#replaces old and reheapifies
         return None#return an empty path
     else:#do tree search instead
@@ -296,8 +276,6 @@ def bestFirstSearch(evaluationFunction,startNode,\
                 return curNode.getPath()
             successors = curNode.successorStates()
             for suc in successors:
-                #TODO: notify node that it is being expanded to
-                ##so we can track statistics
                 suc.evaluate(evaluationFunction)
                 frontier.push(suc)
         return None
@@ -317,7 +295,7 @@ class AStarSearchNode(BestFirstSearchNode):
 
         Description: Initializes search node to a given g value
         """
-        super(AStarSearchNode,self).__init__()
+        super(BestFirstSearchNode,self).__init__()
 
 def aStarSearch(heuristicFunction,aStarSearchNode):
     """
@@ -349,133 +327,6 @@ def aStarSearch(heuristicFunction,aStarSearchNode):
 if __name__ == "__main__":
     print ("Unit test for Search.py mechanics:  Should return no falses")
     
-    print ("TESTING: _PriorityQueue")
-    pq = _PrioritySet(hasBetterUtilityThan)
-    
-    pq.push(1)
-    pq.push(8)
-    pq.push(1)
-    pq.push(2)
-    pq.push(8)
-    pq.push(2)
-    pq.push(6)
-    pq.push(8)
-    pq.push(5)
-    pq.push(7)
-    
-    print (pq.heapArray == [8,6,7,1,5,2])
-    print (not pq.isEmpty())
-    print (pq.pop() == 8)
-    print (pq.pop() == 7)
-    print (pq.heapArray == [6,5,2,1])
-    print (not pq.isEmpty())
-    pq.push(9)
-    pq.push(4)
-    print (pq.heapArray == [9,6,4,1,5,2])
-    print (pq.pop() == 9)
-    print (pq.pop() == 6)
-    print (pq.pop() == 5)
-    print (pq.pop() == 4)
-    print (pq.pop() == 2)
-    print (pq.pop() == 1)
-    print (pq.isEmpty())
-    
-    class Test(object):
-        __slots__ = ("x","y","extra","c")
-        def __init__(self,x,y,c=0):
-            self.extra = (6,8889,y,3443,x,"fda")
-            self.x = x
-            self.y = y
-            self.c = c
-        def __hash__(self):
-            return hash((self.x,self.y))
-        def __eq__(self,other):
-            return (self.x,self.y) == (other.x,other.y)
-        def __ne__(self,other):
-            return not self.__eq__(other)
-        def __lt__(self,other):
-            return self.c < other.c
-        def __gt__(self,other):
-            return self.c > other.c
-        def __le__(self,other):
-            return self.c <= other.c
-        def __ge__(self,other):
-            return self.c >= other.c
-        def __cmp__(self,other):
-            return self.c - other.c
-        def __str__(self):
-            return "("+str(self.x)+":"+str(self.y)+":"+str(self.c)+")"
-            
-    print ("")
-    print ("next 4 numbers should be the same:")
-    obj1 = Test(1,2,4444)
-    print obj1.__hash__()
-    obj1.extra = (99,89)
-    print obj1.__hash__()
-    pq.push(obj1)
-    obj1b = pq.pop()
-    print (obj1 is obj1b)
-    print obj1b.__hash__()
-    pq.push(obj1)
-    obj2 = Test(1,2,99999)#should hash and equate to same
-    print (len(pq.heapArray) == len(pq._hiddenSet) and len(pq.heapArray) == 1)
-    print (obj2.__hash__())
-    print (obj1 == obj2)
-    pq.push(obj1)
-    pq.push(obj2)
-    print (len(pq.heapArray) == len(pq._hiddenSet) and len(pq.heapArray) == 1)
-    obj2b = pq.pop()
-    print (obj2 is obj2b)
-    print (obj1 < obj2)
-    pq.push(obj2b)
-    obj3 = Test(8,4,5555)
-    pq.push(obj3)
-    obj4 = Test(8,4,10101010)
-    pq.push(obj4)
-    obj4b = pq.pop()
-    obj2c = pq.pop()
-    print (pq.heapArray == list())
-    print (obj2b is obj2c)
-    print (obj4b is obj4)
-    print (obj4 == obj3)
-    
-    pq.push(obj1)#1,2,4444
-    pq.push(obj1)
-    pq.push(obj1)
-    pq.push(Test(4,4,4))
-    pq.push(Test(4,4,6666))
-    
-    def pr(queue):
-        print ("---")
-        for obj in queue.heapArray:
-            print obj
-    pr(pq)
-    pq.push(Test(4,4,3))
-    pr(pq)
-    pq.push(obj4)#8,4,10101010
-    pq.push(Test(4,4,4))
-    pr(pq)
-    pq.push(obj3)#8,4,5555
-    pq.push(obj1)
-    pr(pq)
-    pq.push(Test(1,99,1))
-    pq.push(Test(1,4,3))
-    pr(pq)
-    pq.push(Test(0,0,0))
-    pq.push(Test(0,2,4446))
-    pq.push(Test(1,99,3))
-    pq.push(Test(4,4,0))
-    pq.push(Test(8,4,0))
-    pr(pq)
-    print ("XXXXXXXXXXX")
-    while (not pq.isEmpty()):
-        print (pq.pop())
-    
-    print "--------------"
-    
-    newQ = _PrioritySet(hasBetterUtilityThan)
-    newQ.push(Test(0,0,4))
-    newQ.push(Test(1,1,4))
-    print newQ.pop() == Test(0,0,4)
+    print ("TODO: DEVELOP SOME UNIT TESTS FOR THE Search")
     
     print ("This concludes tests for Search.py")

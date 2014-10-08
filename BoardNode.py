@@ -14,8 +14,6 @@ Dates editted:
 
 from Search import AStarSearchNode
 
-from Directions import *
-
 class BoardNode(AStarSearchNode):
     """
     Provides search state for the board puzzle
@@ -39,30 +37,11 @@ class BoardNode(AStarSearchNode):
         Description: All Board Nodes will share the same board object, but 
         different locations and dice.
         """
-        super(BoardNode,self).__init__()
         self.board = board
         self.location = location
         self.die = die
         self.path = path
-        #############
-        #DEBUGGING: Prints movement as nodes are created
-        #print self
-        #raw_input()
-        #############
-    
-    def __str__(self):
-        result = "NODE:\n"
-        result += "Location: "+str(self.location)+"\n"
-        result += "Die:      "+str(self.die.getTop())+"\n"
-        result += "  ud:"+str(self.die._upDown)+"\n"
-        result += "  ns:"+str(self.die._northSouth)+"\n"
-        result += "  ew:"+str(self.die._eastWest)+"\n"
-        result += "Hash:     "+str(hash(self))+"\n"
-        result += "Dir: "
-        for dir in self.path:
-            result += "-"+Directions.directionToString(dir)
-        result += "\n"
-        return result
+        super(AStarSearchNode,self).__init__(self.evaluatePath())
     
     def successorStates(self):
         """
@@ -77,7 +56,7 @@ class BoardNode(AStarSearchNode):
         for direction in self.board.getValidMoves(self.location,self.die):
             newState = self.board.nextState(direction,self.location,self.die)
             newPath = self.path + (direction,)
-            newNode = BoardNode(self.board,newState[0],newState[1],newPath)
+            newNode = BoardNode(self.board,newState[0],newState[1])
             result.append(newNode)
         return result
     
@@ -118,11 +97,11 @@ class BoardNode(AStarSearchNode):
     def __eq__(self,other):
         diceEqual = (self.die == other.die)
         locationsEqual = (self.location == other.location)
-        return (diceEqual and locationsEqual)
+        return (diceEqual and locationEqual)
     def __ne__(self,other):
         return not self.__eq__(other)
     def __hash__(self):
-        dieHash = self.die.__hash__()
+        dieHash = hash(self.die)
         return hash((dieHash, self.location))
 
 
@@ -131,7 +110,7 @@ class BoardNode(AStarSearchNode):
 
 def heuristicTest(BoardNode):
     """If used in A*, the search will be Uniform-Cost search"""
-    return 0#returning 0 will only look at the path cost and ignore heuristics
+    return 0#returning 0 will only look at the path cost and ingore heuristics
     
     ############################################################################
     ##Enter our 3 heuristic functions below.

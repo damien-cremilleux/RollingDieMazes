@@ -10,15 +10,16 @@ Authors:
 Dates editted:
     Oct. 4th, 2014 (partially completed)
     Oct. 5th, 2014 (initial revision)
-    Oct. 6th, 2014 (changed a little thing that I can't remember)
+    Oct. 6th, 2014 (changed a little thing tha I can't remember)
 """
 
-##Static constants
-def GREATER_THAN(objA,objB):
-    """Default comparator; returns bool for objA > objB"""
-    return objA > objB
-
-class PriorityQueue(object):
+class PriorityQueue:
+    
+    ##Static constants
+    @staticmethod
+    def GREATER_THAN(objA,objB):
+        """Default comparator; returns bool for objA > objB"""
+        return objA > objB
     
     """
     heapArray           = the underlying heap data in array form
@@ -27,14 +28,13 @@ class PriorityQueue(object):
     """
     __slots__ = ("heapArray","isMoreImportantThan")
     
-    def __init__(self,comparator=GREATER_THAN):
+    def __init__(self,comparator=PriorityQueue.GREATER_THAN):
         """
         Function: (Function: Type X Type -> bool) -> null
         
         Description: initializes
         """
         self.isMoreImportantThan = comparator
-        self.heapArray = list()
     
     def _swap(self,i,j):
         temp = self.heapArray[i]
@@ -64,7 +64,6 @@ class PriorityQueue(object):
                 self._swap(index,leftInd)
                 self._sinkDown(leftInd)
             return
-        right = self.heapArray[rightInd]
         if (self.isMoreImportantThan(left,right)):
             if (not self.isMoreImportantThan(top,left)):
                 self._swap(index,leftInd)
@@ -75,6 +74,10 @@ class PriorityQueue(object):
                 self._swap(index,rightInd)
                 self._sinkDown(rightInd)
                 return
+        if (not self.isMoreImportantThan(top,bot)):
+            temp = top
+            top = bot
+            self._sinkDown(PriorityQueue._left(index)]
         
     @staticmethod
     def _up(index):
@@ -94,19 +97,16 @@ class PriorityQueue(object):
     #treat public
     def push(self,obj):
         self.heapArray.append(obj)
-        i = len(self.heapArray) - 1
+        i = len(heapArray) - 1
         self._siftUp(i)
         
     #assumes not empty
     #treat public
     def pop(self):
-        if (len(self.heapArray) < 2):
-            return self.heapArray.pop()
-        else:
-            returnVal = self.heapArray[0]
-            self.heapArray[0] = self.heapArray.pop()
-            self._sinkDown(0)
-            return returnVal
+        returnVal = self.heapArray[0]
+        heapArray[0] = self.heapArray.pop()
+        self._sinkDown(0)
+        return returnVal
     
     #treat public
     def isEmpty(self):
@@ -116,38 +116,6 @@ class PriorityQueue(object):
 if __name__ == "__main__":
     print ("Unit test for PriorityQueue.py mechanics:  Should return no falses")
     
-    pq = PriorityQueue()
-    
-    pq.push(1)
-    pq.push(8)
-    pq.push(1)
-    pq.push(2)
-    pq.push(8)
-    pq.push(2)
-    pq.push(6)
-    pq.push(8)
-    pq.push(5)
-    pq.push(7)
-    
-    print (pq.heapArray == [8,8,6,8,7,1,2,1,5,2])
-    
-    print (not pq.isEmpty())
-    print (pq.pop() == 8)
-    print (pq.pop() == 8)
-    print (pq.pop() == 8)
-    print (pq.pop() == 7)
-    print (pq.heapArray == [6,5,2,1,2,1])
-    print (not pq.isEmpty())
-    pq.push(9)
-    pq.push(4)
-    print (pq.pop() == 9)
-    print (pq.pop() == 6)
-    print (pq.pop() == 5)
-    print (pq.pop() == 4)
-    print (pq.pop() == 2)
-    print (pq.pop() == 2)
-    print (pq.pop() == 1)
-    print (pq.pop() == 1)
-    print (pq.isEmpty())
+    print ("TODO: DEVELOP SOME UNIT TESTS FOR THE PriorityQueue")
     
     print ("This concludes tests for PriorityQueue.py")

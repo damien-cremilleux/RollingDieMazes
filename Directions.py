@@ -22,7 +22,7 @@ class Directions:
     increases downwards (south), and column number increases rightwards (east).
     
     Conventional cartesion coordinates are in the form (x,y), where these are 
-    in (-y,x) or (row index,column index).
+    in (-y,x)
     
     NORTH is the upwards direction on the grid
     SOUTH is downwards direction on the grid
@@ -42,13 +42,13 @@ class Directions:
     
     @staticmethod
     def directionToString(direction):
-        if direction == Directions.NORTH:
+        if direction = NORTH:
             return "NORTH"
-        elif direction == Directions.EAST:
+        elif direction = EAST:
             return "EAST"
-        elif direction == Directions.SOUTH:
-            return "SOUTH"
-        elif direction == Directions.WEST:
+        elif direction = SOUTH:
+            return "SOUTH
+        elif direction = WEST:
             return "WEST"
     
     @staticmethod
