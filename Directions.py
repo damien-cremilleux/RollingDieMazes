@@ -40,6 +40,8 @@ class Directions:
     SOUTH = 2
     WEST  = 3
     
+    DIRECTIONS = (NORTH, EAST, SOUTH, WEST)
+    
     @staticmethod
     def directionToString(direction):
         if direction == Directions.NORTH:

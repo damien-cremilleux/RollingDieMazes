@@ -50,7 +50,7 @@ class Board(object):
     If a Cell object is not simply a character, then see Cell.py.
     Otherwise, Cell.py doesn't exist yet and we are using string literals
     """
-    __slots__ = ("_dieLocation","_die","_grid")
+    __slots__ = ("_dieLocation","_die","_grid","_goalLocation")
     
     def __init__(self,boardFile):
         """
@@ -76,6 +76,9 @@ class Board(object):
             if Board.START in line.split():
                 col = line.split().index(Board.START)
                 self._dieLocation = (row,col)
+            if Board.GOAL in line.split():
+                col = line.split().index(Board.GOAL)
+                self._goalLocation = (row,col)
             row = row + 1
         if col < 0:
             raise NoStartError("Board has no start location: "+filename)

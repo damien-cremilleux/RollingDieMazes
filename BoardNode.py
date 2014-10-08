@@ -13,8 +13,9 @@ Dates editted:
 """
 
 from Search import AStarSearchNode
-
+from RelaxedSearches import NoOrientationNode
 from Directions import *
+from Search import aStarSearch
 
 class Counter(object):
     __slots__ = ("count")
@@ -139,10 +140,6 @@ class BoardNode(AStarSearchNode):
 
 ################################################################################
 ##Friendly evaluation functions for BoardNode objects
-
-def heuristicTest(BoardNode):
-    """If used in A*, the search will be Uniform-Cost search"""
-    return 0#returning 0 will only look at the path cost and ignore heuristics
     
     ############################################################################
     ##Enter our 3 heuristic functions below.
@@ -150,14 +147,36 @@ def heuristicTest(BoardNode):
     ##They take one argument, a BoardNode object, and return an estimated cost
     ##value.
     ############################################################################
+def UniformCost(boardNode):
+    """If used in A*, the search will be Uniform-Cost search"""
+    return 0#returning 0 will only look at the path cost and ignore else
 
+def ManhattanDistanceIgnoringOrientation(boardNode):
+    r2 = boardNode.board._goalLocation[0]
+    r1 = boardNode.location[0]
+    c2 = boardNode.board._goalLocation[1]
+    c1 = boardNode.location[1]
+    return abs(r2-r1)+abs(c2-c1)
 
-    #TODO:
+def ManhattanDistanceAccountingOrientation(boardNode):
+    ##First find if the 1 on the die is facing away from goal, towards the 
+    ##goal, or upwards.
+    
+    r2 = boardNode.board._goalLocation[0]
+    r1 = boardNode.location[0]
+    c2 = boardNode.board._goalLocation[1]
+    c1 = boardNode.location[1]
+    dr = abs(r2-r1)
+    dc = abs(c2-c1)
+    
+    #if we our 1 is facing towards the goal: it will take dr+dc
+    return
+    
 
 ################################################################################
 
 #this is used by Main.py as the list of heuristics for it to use
-SequenceOfHeuristics = (heuristicTest,)
+SequenceOfHeuristics = (UniformCost,ManhattanDistanceIgnoringOrientation,ShortestPathIgnoringOrientation)
 
 ################################################################################
 if __name__ == "__main__":

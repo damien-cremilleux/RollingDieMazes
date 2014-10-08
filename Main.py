@@ -34,8 +34,9 @@ def main():
             
             for heuristicFunction in SequenceOfHeuristics:
                 print ("")
+                raw_input("Press ENTER to continue to next heuristic")
                 print ("")
-                print ("Function: "+heuristicFunction.__name__)
+                print ("Heuristic Function: "+heuristicFunction.__name__)
                 print (board)
                 closedCounter = Counter()#global counter for node closing
                 frontierCounter = Counter()#global counter for node expansion
@@ -52,7 +53,7 @@ def main():
                     print ("No Solution")
                 print ("Number Visited:  "+str(closedCounter.getCount()))
                 print ("Number Expanded: "+str(frontierCounter.getCount()))
-                print ("End of function '"+heuristicFunction.__name__+"'")
+                print ("End of heuristic '"+heuristicFunction.__name__+"'")
                 ##reset board for next heuristic
                 board._die = Die()
                 board._dieLocation = startLocation

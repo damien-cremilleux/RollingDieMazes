@@ -178,6 +178,10 @@ class BestFirstSearchNode(EvaluatedNode,PathTracingSearchNode):
     def __init__(self):
         super(BestFirstSearchNode,self).__init__()
         #note: diamond inheritence
+    def notifyClosing(self):
+        return
+    def notifyExpansion(self):
+        return
 class _PrioritySet(PriorityQueue):
     """Minor Class
     Represents a priority queue combined with a set to provide O(logn) retrieval
