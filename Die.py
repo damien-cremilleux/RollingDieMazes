@@ -56,17 +56,17 @@ class Die:
     
     def __eq__(self,other):
         x = self._upDown == other._upDown
-        y = self._northSouth = other._northSouth
-        z = self._eastWest = other._eastWest
+        y = self._northSouth == other._northSouth
+        z = self._eastWest == other._eastWest
         return (x and y and z)
     def __ne__(self,other):
         return not self.__eq__(other)
     def __hash__(self):
         """
         Assumes die state does not change.  Only use this where die objects
-        are constants
+        are never altered
         """
-        return hash((self._upDown,self._northSouth,south._eastWest))
+        return hash((self._upDown,self._northSouth,self._eastWest))
         
     ############################################################################
     

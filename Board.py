@@ -10,6 +10,7 @@ Authors:
     Oct. 4th, 2014 (partially completed)
     Oct. 5th, 2014 (initial revision)
     Oct. 6th, 2014 (added equality and hash functions)
+    Oct. 7th, 2014 (added tests)
 """
 
 import re
@@ -47,70 +48,94 @@ class Board:
     """
     __slots__ = ("_dieLocation","_die","_grid")
     
-    def __init__(self,boardString):
+    def __init__(self,boardFile):
         """
         Function: string -> null
         
         See: README.txt for details on the format of a valid board string.
         TODO: actually do that ^
         
-        Description: Makes a Board object from a formatted board string
+        Description: Makes a Board object from a formatted board file
         
-        Preconditions:  The boardString must be a valid board string
+        Preconditions:  The boardString must be a valid board file
         """
         self._grid = list()
-        rowStrings = re.split('\s+',boardString)#split and remove endline chars
-        rowLength = 0#length of rows
-        for rNum in range(0,len(rowStrings)):
-            rowStr = rowStrings[rNum]
-            
-            #detects trailing rows at end of board
-            if (len(rowStr) < rowLength):
-                break
-            else:
-                rowLength = len(rowStr)
-            
-            #sticks row to the end of our row list
-            newRow = rowStr.split("",rowStr)
-            for cNum in range(0,len(newRow)):
-                ##TODO: convert newRow[cNum] from a character to Cell object
-                ##      equivalent.  (currently this is not necessary)
-                if newRow[cNum] == Board.START:
-                    newRow[cNum] = Board.FREE
-                    self._dieLocation = (rNum,cNum)
-                    self._die = Die()
-            self._grid.append(newRow)
-        
-    
-    def __init__(self,width,height,startRow,startCol,goalRow,goalCol):
+        tmpGrid = list()        # Temporary grid, used for formatting
+        f = open(boardFile,"r")
+        for line in f:
+            tmpGrid.append(line)
+
+        for line in tmpGrid:
+             self._grid.append(line.split())
+             
+        self._dieLocation = 0#TODO: initialize this
+        self._die = 0#TODO: initialize this
+
+    def __str__(self):
         """
-        Function: int X int -> null
+        Function: null -> string
         
-        Description: Initializes a board to an empty board with the die 
-        initialized at the given start coordinates and the goal at the other 
-        given coordinates.  Note that (0,0) is the top left cell of the grid.
-        
-        width is the number of columns
-        height is the number of rows
-        
-        The board will not have obstacles initialized yet if you call this
-        constructor
-        
-        Preconditions:
-            startRow and startCol must correspond to a FREE space on the board
+        Description: Return a formatted string representing the board
         """
-        #init grid
-        self._grid = Board._newGrid(height,width)
-        for i in range(0,height):
-            for j in range(0,width):
-                self._grid[i][j] = Board.FREE
+        resultString = ""
+        for row in self._grid:
+            for elem in row:
+                resultString = resultString + elem + " "
+            resultString = resultString + "\n"
+        return resultString
+
+        # rowStrings = re.split('\s+',boardString)#split and remove endline chars
+        # rowLength = 0#length of rows
+        # for rNum in range(0,len(rowStrings)):
+        #     rowStr = rowStrings[rNum]
+            
+        #     #detects trailing rows at end of board
+        #     if (len(rowStr) < rowLength):
+        #         break
+        #     else:
+        #         rowLength = len(rowStr)
+            
+        #     #sticks row to the end of our row list
+        #     newRow = rowStr.split("",rowStr)
+        #     for cNum in range(0,len(newRow)):
+        #         ##TODO: convert newRow[cNum] from a character to Cell object
+        #         ##      equivalent.  (currently this is not necessary)
+        #         if newRow[cNum] == Board.START:
+        #             newRow[cNum] = Board.FREE
+        #             self._dieLocation = (rNum,cNum)
+        #             self._die = Die()
+        #     self._grid.append(newRow)
+        
+    # TODO: check multiple constructors
+    # def __init__(self,width,height,startRow,startCol,goalRow,goalCol):
+    #     """
+    #     Function: int X int -> null
+        
+    #     Description: Initializes a board to an empty board with the die 
+    #     initialized at the given start coordinates and the goal at the other 
+    #     given coordinates.  Note that (0,0) is the top left cell of the grid.
+        
+    #     width is the number of columns
+    #     height is the number of rows
+        
+    #     The board will not have obstacles initialized yet if you call this
+    #     constructor
+        
+    #     Preconditions:
+    #         startRow and startCol must correspond to a FREE space on the board
+    #     """
+    #     #init grid
+    #     self._grid = Board._newGrid(height,width)
+    #     for i in range(0,height):
+    #         for j in range(0,width):
+    #             self._grid[i][j] = Board.FREE
                 
-        #init goal position
-        self._grid[goalRow][goalCol] = Board.GOAL
+    #     #init goal position
+    #     self._grid[goalRow][goalCol] = Board.GOAL
         
-        ##init die
-        self._dieLocation = (startRow,startCol)
-        self._die = Die()
+    #     ##init die
+    #     self._dieLocation = (startRow,startCol)
+    #     self._die = Die()
         
         
     ############################################################################
@@ -157,7 +182,7 @@ class Board:
         return len(self._grid)#number of rows
     
     #treat public
-    def isValidMove(self, direction):
+    def _isValidMove(self, direction):
         """
         Function: Direction -> boolean
         
@@ -201,13 +226,13 @@ class Board:
         actualDie = self._die
         self._dieLocation = dieLoc
         self._die = die
-        result = self.isValidMove(direction)
+        result = self._isValidMove(direction)
         self._dieLocation = actualLoc
         self._die = actualDie
         return result
         
     #treat public
-    def getValidMoves(self):
+    def _getValidMoves(self):
         """
         Function: null -> array[Direction]
         
@@ -221,7 +246,7 @@ class Board:
         moves = list()
         for dir in [Directions.NORTH,Directions.EAST,\
                     Directions.SOUTH,Directions.WEST]:
-            if (self.isValidMove(dir)):
+            if (self._isValidMove(dir)):
                 moves.append(dir)
         return moves
     
@@ -243,7 +268,7 @@ class Board:
         actualDie = self._die
         self._dieLocation = dieLoc
         self._die = die
-        result = self.getValidMoves()
+        result = self._getValidMoves()
         self._dieLocation = actualLoc
         self._die = actualDie
         return result
@@ -286,14 +311,14 @@ class Board:
         
         Returns: a tuple, ((new loc row,new loc col), new Die)
         """
-        newLocation = Board._addTuples(self._dieLocation,\
+        newLocation = Board._addTuples(location,\
                                   Directions.toGridVector(direction))
         newDie = deepcopy(die)
         newDie.rotate(direction)
         return (newLocation,newDie)
     
     #treat public
-    def isGoal(self):
+    def _isGoal(self):
         """
         Function: null -> boolean
         
@@ -328,6 +353,9 @@ class Board:
 ################################################################################
 if __name__ == "__main__":
     print ("Unit test for Board.py mechanics:  Should return no falses")
+
+    b = Board("testfile")
+    print b
     
     print ("TODO: DEVELOP SOME UNIT TESTS FOR THE BOARD CLASS")
     

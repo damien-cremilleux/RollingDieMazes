@@ -1,5 +1,5 @@
 """
-Search.py
+Main.py
 
 Takes in an a list of rolling-die-puzzle files from the command line and, if it
 exists, produces a solution.
@@ -26,22 +26,28 @@ class NoStartError(Exception):
 
 def getStartLocation(filename):
     row = 0
+    file = open(filename,"r")
     for line in file:
         for col in range(0,len(line)):
-            if line[col] == board.START:
+            if line[col] == Board.START:
                 return (row,col)
         row = row + 1
     raise NoStartError("Board has no start location: "+filename)
 
 def main():
-    if len(sys.argv) == 0:
+    if len(sys.argv) == 1:
         print ("No Rolling-Die-Puzzle file provided.  Now exiting")
         return
-    for filename in sys.argv:
+    for i in range(1,len(sys.argv)):
+        filename = sys.argv[i]
         try:
             board = Board(filename)
             startLocation = getStartLocation(filename)
             startDie = Die()
+            
+            print ("")
+            print (board)
+            print ("")
             
             for heuristicFunction in SequenceOfHeuristics:
                 startNode = BoardNode(board,startLocation,startDie)
@@ -49,7 +55,7 @@ def main():
                 for direction in path:
                     print (Directions.directionToString(direction))
                 print ("")
-                print ("Length: " + str(len(path))):
+                print ("Length: " + str(len(path)))
                 print ("")
             
         except IOError as e:
