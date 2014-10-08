@@ -63,14 +63,14 @@ This is true because we are dealing with positive step costs.
 
 \subsection{Manhattan distance without obstacles}
 The second heuristic, $h_2$, is based on the city block distance, or Manhattan distance, which is the sum of the absolute differences of Cartesian coordinates.
-To find this heuristic, we take the original problem with fewer restrictions: no obstacles, the die can roll in any direction. 
+To find this heuristic, we take the original problem with fewer restrictions: no obstacles and we do not take into account what is the orientation of the die. 
 We illustrate this on the following maze.
 The die is on the cell marked ‘D’.
 In this case, the heuristic will be $h(n=’D’) = 4$.
 
 \begin{lstlisting}
 S . . . .
-. D * * *
+D . * * *
 . * . . G
 . . . . .
 * . . . .
@@ -82,28 +82,32 @@ Moreover, this heuristic is also consistent, because it is the exact cost for th
 Finally, this heuristic gives bigger values than h1. This means that we can expect better results with this heuristics, compare to the previous one. 
 
 
-\subsection{Manhattan distance with obstacles}
+\subsection{Manhattan distance with orientation}
 For the last heuristic, $h_3$, we also generate an heuristic from a relaxed problem.
-We know only ignore the restriction about the number on top of the die.
-Contrary to the heuristic two, we take obstacles into consideration.
-So the value given by $h_3$ will be at least as big as $h_2$ for all nodes.
-So this heuristic is likely to be more effective than the previous one.
+We know only ignore the restriction about the obstacles.
+Contrary to the heuristic two, we take the orientation of the die into consideration.
+Given the position and the orientation of the dice, it is possible to find a minimal number of rotations to do to solve the maze.
+For instance, if the die with the 1 on top is on the same row or column as the goal position, the maze can be solve in $mahattan\_distance + 2$.
+
+So we can generate a set of rules giving the position and orientation.
+We observe that each time the rule has the form  $mahattan\_distance + cst$, the value given by $h_3$ will be at least as big as $h_2$ for all nodes.
+This heuristic is likely to be more effective than the previous one.
 We illustrate this heuristic with the following maze.
-Now the heuristic will be $h_3(n=’D’) = 8$.
+Now the heuristic will be $h_3(n=’D’) = 4 + 2 = 6$.
 
 \begin{lstlisting}
 S . . . .
-. D * * *
-. * . . G
+. . * * *
+D * . . G
 . . . . .
 * . . . .
 \end{lstlisting}
 
-We used a relaxed problem of the original one.
+We again used a relaxed problem of the original one.
 For the same reasons like $h_2$, this heuristic is admissible and consistent.
 
 \section{Performance metrics}
-4
+
 For each heuristics, we ran the five puzzles given in the wording.
 The results are in the following tables.
 
@@ -112,8 +116,8 @@ The results are in the following tables.
       \cline{2-10} & \multicolumn{3}{|c|}{Puzzle 1} & \multicolumn{3}{|c|}{Puzzle 2} & \multicolumn{3}{|c|}{Puzzle 3} \\
       \hline
     & $h_1$ & $h_2$ & $h_3$ & $h_1$ & $h_2$& $h_3$ & $h_1$ &  $h_2$ & $h_3$ \\ \hline
-    Number of nodes generated & 32 &       &       & 95 &  &  & 2 &  & \\ \hline
-    Number of nodes visited   & 24 &       &       & 84 &  &  & 3 &  & \\ \hline
+    Number of nodes generated & 32 & 12 &  & 95 & 67 &  & 2 & 2 & \\ \hline
+    Number of nodes visited   & 24 & 9  &  & 84 & 50 &  & 3 & 3 & \\ \hline
     \end{tabular}
 \end{center}
 
@@ -122,11 +126,12 @@ The results are in the following tables.
       \cline{2-7} & \multicolumn{3}{|c|}{Puzzle 4} & \multicolumn{3}{|c|}{Puzzle 5} \\
       \hline
     & $h_1$ & $h_2$ & $h_3$ & $h_1$ & $h_2$& $h_3$ \\ \hline
-    Number of nodes generated & 161 &       &       & 1271 &  &   \\ \hline
-    Number of nodes visited   & 149 &       &       & 1260 &  &  \\ \hline
+    Number of nodes generated & 161 & 101 &       & 1271 & 1080 &   \\ \hline
+    Number of nodes visited   & 149 & 82  &       & 1260 &  737 &  \\ \hline
     \end{tabular}
 \end{center}
 
+To show the difference, the following bar graphs give the number of nodes generated and visited according to the heuristic, for each puzzle.
 
 \input{graph1.tex}
 
@@ -140,9 +145,18 @@ The results are in the following tables.
 
 \section{Discussions}
 
-For the puzzle 3, we see that the number of nodes generated is less than the number of nodes visited.
+The first observation we can make is that the first heuristic generates a huge amount of nodes, more than 1200 for the puzzle 5.
+The second heuristic is better, however the number of nodes generated is still huge.
+According to our expectations, the third heuristic has the best results.
+With this heuristic, the number of nodes generated is only .
+
+
+For the puzzle 3, we see that the number of nodes generated is less than the number of nodes visited, for all the heuristics.
 The explaination is that the initial node is visited, and not expanded.
-nn
+
+
+As a conclusion, this project shows use the importance of the choice of heuristic.
+The quality of the heuristic has a huge effect on the performance of the algorithm.
 
 
 \end{document}
