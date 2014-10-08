@@ -1,11 +1,13 @@
 h1 = "#99ffff"; h2 = "#4671d5"; h3 = "#ff0000"
 set auto x
 set auto y
+set auto fix
 set style data histogram
 set style histogram cluster gap 1
 set style fill solid border -1
 set boxwidth 0.9
 set xtic scale 0
+set yrange [ 0 : * ]
 set terminal epslatex
 
 set title "Results for puzzle 1"
