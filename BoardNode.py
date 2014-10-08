@@ -16,6 +16,7 @@ from Search import AStarSearchNode
 from RelaxedSearches import NoOrientationNode
 from Directions import *
 from Search import aStarSearch
+from Die import Die
 
 class Counter(object):
     __slots__ = ("count")
@@ -182,6 +183,9 @@ def ManhattanDistanceAccountingOrientation(boardNode):
     
     #if the 1 is facing upwards and...
     if (die.getTop()==1):
+        #...if we are ontop the goal: die is 0 steps from goal
+        if (dr==0 and dc ==0):
+            return 0
         #...if it is orthogonal to the goal: die is dr+dc+2 steps from goal
         if (dr==0 or dc==0):
             return abs(dr)+abs(dc)+2
@@ -193,17 +197,28 @@ def ManhattanDistanceAccountingOrientation(boardNode):
     facingAway = die.getNorth()==1 and dr>=0
     facingAway = facingAway or (die.getWest()==1 and dc>=0)
     facingAway = facingAway or (die.getSouth()==1 and dr<=0)
-    facingAway = facingAway or (die.getEast()==1 and dr<=0)
+    facingAway = facingAway or (die.getEast()==1 and dc<=0)
     if (facingAway):
         #...if either dr or dc is zero: die is dr+dc+4 steps away
         if (dr==0 or dc==0):
+            
+            if (die.getNorth()==1 and dr>0):
+                return abs(dr)+abs(dc)+2
+            elif (die.getEast()==1 and dc<0):
+                return abs(dr)+abs(dc)+2
+            elif (die.getSouth()==1 and dr<0):
+                return abs(dr)+abs(dc)+2
+            elif (die.getWest()==1 and dc>0):
+                return abs(dr)+abs(dc)+2
+                
             return abs(dr)+abs(dc)+4
         #otherwise, if dr or dc are 1: die is dr+dc steps from goal
-        elif (abs(dr)==1 or abs(dc)==0):
+        elif (abs(dr)==1 or abs(dc)==1):
             return abs(dr)+abs(dc)
         #otherwise: die is dr+dc+2 steps away from the goal
         else:
             return abs(dr)+abs(dc)+2
+    return 0
     
 
 ################################################################################
@@ -221,11 +236,23 @@ if __name__ == "__main__":
     class TestBoard:
         pass
     
+    N=Directions.NORTH
+    E=Directions.EAST
+    S=Directions.SOUTH
+    W=Directions.WEST
+    
     bNode = Test()
     brd = TestBoard()
     brd._goalLocation = (3,4)
     die = Die()
     loc = (3,4)
-        
+    die.rotate(N)
+    die.rotate(E)
+    bNode.die = die
+    bNode.location = (2,5)
+    bNode.board = brd
+    print (ManhattanDistanceAccountingOrientation(bNode)==2)
+    bNode.die.rotate(S)
+    bNode.location = (3,5)
     
     print ("This concludes tests for BoardNode.py")
