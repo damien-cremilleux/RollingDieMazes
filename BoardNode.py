@@ -162,26 +162,70 @@ def ManhattanDistanceAccountingOrientation(boardNode):
     ##First find if the 1 on the die is facing away from goal, towards the 
     ##goal, or upwards.
     
-    r2 = boardNode.board._goalLocation[0]
-    r1 = boardNode.location[0]
-    c2 = boardNode.board._goalLocation[1]
-    c1 = boardNode.location[1]
-    dr = abs(r2-r1)
-    dc = abs(c2-c1)
+    rg = boardNode.board._goalLocation[0]
+    rd = boardNode.location[0]
+    cg = boardNode.board._goalLocation[1]
+    cd = boardNode.location[1]
     
-    #if we our 1 is facing towards the goal: it will take dr+dc
-    return
+    dr = rg-rd
+    dc = cg-cd
+    
+    die = boardNode.die
+    
+    #if the 1 is facing towards the goal: die is dr+dc+4 steps from goal
+    facingTowards = (die.getNorth() == 1) and dr<0
+    facingTowards = facingTowards or (die.getWest()==1 and dc<0)
+    facingTowards = facingTowards or (die.getSouth()==1 and dr>0)
+    facingTowards = facingTowards or (die.getEast()==1 and dc>0)
+    if (facingTowards):
+        return abs(dr)+abs(dc)
+    
+    #if the 1 is facing upwards and...
+    if (die.getTop()==1):
+        #...if it is orthogonal to the goal: die is dr+dc+2 steps from goal
+        if (dr==0 or dc==0):
+            return abs(dr)+abs(dc)+2
+        #otherwise, it is dr+dc+4 steps from the goal
+        else:
+            return abs(dr)+abs(dc)+4
+    
+    #if the 1 is facing away from the goal...
+    facingAway = die.getNorth()==1 and dr>=0
+    facingAway = facingAway or (die.getWest()==1 and dc>=0)
+    facingAway = facingAway or (die.getSouth()==1 and dr<=0)
+    facingAway = facingAway or (die.getEast()==1 and dr<=0)
+    if (facingAway):
+        #...if either dr or dc is zero: die is dr+dc+4 steps away
+        if (dr==0 or dc==0):
+            return abs(dr)+abs(dc)+4
+        #otherwise, if dr or dc are 1: die is dr+dc steps from goal
+        elif (abs(dr)==1 or abs(dc)==0):
+            return abs(dr)+abs(dc)
+        #otherwise: die is dr+dc+2 steps away from the goal
+        else:
+            return abs(dr)+abs(dc)+2
     
 
 ################################################################################
 
 #this is used by Main.py as the list of heuristics for it to use
-SequenceOfHeuristics = (UniformCost,ManhattanDistanceIgnoringOrientation,ShortestPathIgnoringOrientation)
+SequenceOfHeuristics = (UniformCost,ManhattanDistanceIgnoringOrientation,ManhattanDistanceAccountingOrientation)
 
 ################################################################################
 if __name__ == "__main__":
     print ("Unit test for BoardNode.py mechanics:  Should return no falses")
     
-    print ("TODO: DEVELOP SOME UNIT TESTS FOR THE BoardNode class")
+    class Test:
+        pass
+    
+    class TestBoard:
+        pass
+    
+    bNode = Test()
+    brd = TestBoard()
+    brd._goalLocation = (3,4)
+    die = Die()
+    loc = (3,4)
+        
     
     print ("This concludes tests for BoardNode.py")
