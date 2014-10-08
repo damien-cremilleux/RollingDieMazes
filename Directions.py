@@ -42,13 +42,13 @@ class Directions:
     
     @staticmethod
     def directionToString(direction):
-        if direction = NORTH:
+        if direction == NORTH:
             return "NORTH"
-        elif direction = EAST:
+        elif direction == EAST:
             return "EAST"
-        elif direction = SOUTH:
-            return "SOUTH
-        elif direction = WEST:
+        elif direction == SOUTH:
+            return "SOUTH"
+        elif direction == WEST:
             return "WEST"
     
     @staticmethod
