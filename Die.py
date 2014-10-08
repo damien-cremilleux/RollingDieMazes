@@ -69,7 +69,9 @@ class Die:
         return hash((self._upDown,self._northSouth,self._eastWest))
     def __str__(self):
         return "TopFace: "+str(self.getTop())+"   NorthFace: "+\
-                str(self.getNorth())+"   EastFace: "+str(self.getEast())
+                str(self.getNorth())+"   EastFace: "+str(self.getEast())+"\n"+\
+                "BotFace: "+str(self.getBottom())+"   SouthFace: "+\
+                str(self.getSouth())+"   WestFace: "+str(self.getWest())
         
     ############################################################################
     
