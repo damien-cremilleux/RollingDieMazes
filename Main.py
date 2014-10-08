@@ -52,11 +52,14 @@ def main():
             for heuristicFunction in SequenceOfHeuristics:
                 startNode = BoardNode(board,startLocation,startDie)
                 path = aStarSearch(heuristicFunction,startNode)
-                for direction in path:
-                    print (Directions.directionToString(direction))
-                print ("")
-                print ("Length: " + str(len(path)))
-                print ("")
+                if path:#if path is found
+                    for direction in path:
+                        print (Directions.directionToString(direction))
+                    print ("")
+                    print ("Length: " + str(len(path)))
+                    print ("")
+                else:#if path not found
+                    print ("No Solution")
             
         except IOError as e:
             print (e)
