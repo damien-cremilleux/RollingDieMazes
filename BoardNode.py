@@ -179,19 +179,19 @@ def ManhattanDistanceAccountingOrientation(boardNode):
     facingTowards = facingTowards or (die.getSouth()==1 and dr>0)
     facingTowards = facingTowards or (die.getEast()==1 and dc>0)
     if (facingTowards):
-        return abs(dr)+abs(dc)#mark
+        return (abs(dr)+abs(dc))#mark: somehow, dr+dc works better than r+c+4
     
     #if the 1 is facing upwards and...
     if (die.getTop()==1):
         #...if we are ontop the goal: die is 0 steps from goal
-        if (dr==0 and dc ==0):
+        if (dr==0 and dc==0):
             return 0
         #...if it is orthogonal to the goal: die is dr+dc+2 steps from goal
         if (dr==0 or dc==0):
-            return abs(dr)+abs(dc)#mark
+            return (abs(dr)+abs(dc))#mark: somehow, dr+dc works better than r+c+2
         #otherwise, it is dr+dc+4 steps from the goal
         else:
-            return abs(dr)+abs(dc)+4
+            return (abs(dr)+abs(dc)+4)
     
     #if the 1 is facing away from the goal...
     facingAway = die.getNorth()==1 and dr>=0
@@ -203,28 +203,29 @@ def ManhattanDistanceAccountingOrientation(boardNode):
         if (dr==0 or dc==0):
             
             if (die.getNorth()==1 and dr>0 and dc==0):
-                return abs(dr)+abs(dc)+2
+                return (abs(dr)+abs(dc)+2)
             elif (die.getEast()==1 and dc<0 and dr==0):
-                return abs(dr)+abs(dc)+2
+                return (abs(dr)+abs(dc)+2)
             elif (die.getSouth()==1 and dr<0 and dc==0):
-                return abs(dr)+abs(dc)+2
+                return (abs(dr)+abs(dc)+2)
             elif (die.getWest()==1 and dc>0 and dr==0):
-                return abs(dr)+abs(dc)+2
+                return (abs(dr)+abs(dc)+2)
                 
-            return abs(dr)+abs(dc)+4
+            return (abs(dr)+abs(dc)+4)
         #otherwise, if dr or dc are 1: die is dr+dc steps from goal
         elif (abs(dr)==1 or abs(dc)==1):
-            return abs(dr)+abs(dc)
+            return (abs(dr)+abs(dc))
         #otherwise: die is dr+dc+2 steps away from the goal
         else:
-            return abs(dr)+abs(dc)+2
-    return 0
-    
+            return (abs(dr)+abs(dc)+2)
+    raise Exception("This line of code should be unreachable")
 
 ################################################################################
 
 #this is used by Main.py as the list of heuristics for it to use
-SequenceOfHeuristics = (UniformCost,ManhattanDistanceIgnoringOrientation,ManhattanDistanceAccountingOrientation)
+SequenceOfHeuristics = (UniformCost,\
+                        ManhattanDistanceIgnoringOrientation,\
+                        ManhattanDistanceAccountingOrientation)
 
 ################################################################################
 if __name__ == "__main__":
