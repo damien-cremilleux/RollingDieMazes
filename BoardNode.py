@@ -13,7 +13,6 @@ Dates editted:
 """
 
 from Search import AStarSearchNode
-from RelaxedSearches import NoOrientationNode
 from Directions import *
 from Search import aStarSearch
 from Die import Die
